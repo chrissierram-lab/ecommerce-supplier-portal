@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "e-Commerce Gapsi Backend",
+    "description": "Operaciones REST y GraphQL. Las creaciones actualizan supplierId para las solicitudes de eliminación.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "supplierId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "REST",
+      "item": [
+        {
+          "name": "Información",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "info"]
+            }
+          }
+        },
+        {
+          "name": "Listar proveedores",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/suppliers?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "suppliers"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear proveedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (pm.response.code === 201 && body.id != null) {",
+                  "  pm.collectionVariables.set('supplierId', String(body.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Proveedor REST {{$guid}}\",\n  \"razonSocial\": \"Proveedor de Prueba, S.A. de C.V.\",\n  \"direccion\": \"Av. Reforma 100, Ciudad de México\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/suppliers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "suppliers"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar proveedor",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/suppliers/{{supplierId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "suppliers", "{{supplierId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "item": [
+        {
+          "name": "Listar proveedores",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"query Suppliers($page: Int, $size: Int) { suppliers(page: $page, size: $size) { content { id nombre razonSocial direccion fechaCreacion } number size totalElements totalPages first last } }\",\"variables\":{\"page\":0,\"size\":10}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": ["{{baseUrl}}"],
+              "path": ["graphql"]
+            }
+          }
+        },
+        {
+          "name": "Crear proveedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.createSupplier) {",
+                  "  pm.collectionVariables.set('supplierId', String(body.data.createSupplier.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"mutation CreateSupplier($input: CreateSupplierInput!) { createSupplier(input: $input) { id nombre razonSocial direccion fechaCreacion } }\",\"variables\":{\"input\":{\"nombre\":\"Proveedor GraphQL {{$guid}}\",\"razonSocial\":\"Proveedor de Prueba GraphQL, S.A. de C.V.\",\"direccion\":\"Calle Hidalgo 200, Puebla\"}}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": ["{{baseUrl}}"],
+              "path": ["graphql"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"mutation DeleteSupplier($id: ID!) { deleteSupplier(id: $id) }\",\"variables\":{\"id\":\"{{supplierId}}\"}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": ["{{baseUrl}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

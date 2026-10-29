@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: ecommerce-gapsi
+  profiles:
+    default: dev
+  datasource:
+    url: "jdbc:h2:mem:gapsidb;DB_CLOSE_ON_EXIT=FALSE"
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  graphql:
+    path: /graphql
+
+gapsi:
+  app:
+    welcome-message: "Bienvenido Candidato 01"
+    version: "0.0.1"
+    candidate-image: "/assets/candidate.png"
+  cors:
+    allowed-origins:
+      - "http://localhost:3000"
+      - "http://localhost:5173"
+  seed:
+    enabled: true

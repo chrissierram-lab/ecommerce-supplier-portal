@@ -1,0 +1,34 @@
+type Query {
+    suppliers(page: Int = 0, size: Int = 10): SupplierPage!
+}
+
+type Mutation {
+    createSupplier(input: CreateSupplierInput!): Supplier!
+    deleteSupplier(id: ID!): Boolean!
+}
+
+type SupplierPage {
+    content: [Supplier!]!
+    number: Int!
+    size: Int!
+    numberOfElements: Int!
+    totalElements: Int!
+    totalPages: Int!
+    first: Boolean!
+    last: Boolean!
+    empty: Boolean!
+}
+
+type Supplier {
+    id: ID!
+    nombre: String!
+    razonSocial: String!
+    direccion: String!
+    fechaCreacion: String!
+}
+
+input CreateSupplierInput {
+    nombre: String!
+    razonSocial: String!
+    direccion: String!
+}
